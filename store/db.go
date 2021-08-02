@@ -9,3 +9,17 @@ import (
 func NewConnection(c *config.Config) (*gorm.DB, error) {
 	return gorm.Open(postgres.Open(c.DatabaseUrl()))
 }
+
+func CloseConnection(conn *gorm.DB) error {
+	db, err := conn.DB()
+
+	if err != nil {
+		return err
+	}
+
+	if err = db.Close(); err != nil {
+		return err
+	}
+
+	return nil
+}
