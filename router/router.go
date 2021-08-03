@@ -2,7 +2,9 @@ package router
 
 import (
 	"frm/middleware"
+	"frm/response"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 )
 
@@ -21,6 +23,11 @@ func NewRouter(controllers ...HasRoutes) *mux.Router {
 	var anonymous []*Route
 
 	router := mux.NewRouter()
+
+	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Not found:", r.RequestURI, r.Method)
+		response.NotFound(w, "path does not exist")
+	})
 
 	for _, controller := range controllers {
 		for _, route := range controller.Routes() {

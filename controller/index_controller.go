@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"frm/response"
 	"frm/router"
 	"net/http"
 )
@@ -19,8 +20,7 @@ func NewIndexController() *IndexController {
 		Method:   http.MethodGet,
 		Security: false,
 		Action: func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Add("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
+			response.NewResponse("hello", nil).Send(w, http.StatusOK)
 		},
 	}
 
