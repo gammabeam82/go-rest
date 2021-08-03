@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"frm/di"
 	"frm/model"
 	"frm/repository"
@@ -55,5 +54,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println(fmt.Sprintf("User %s was successfully created", req.Username))
+	log.Printf("User %s was successfully created\n", req.Username)
 }
