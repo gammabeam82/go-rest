@@ -2,8 +2,11 @@ package di
 
 import (
 	"frm/config"
+	"frm/controller"
 	"frm/repository"
+	"frm/router"
 	"frm/store"
+	"github.com/gorilla/mux"
 	"go.uber.org/dig"
 	"gorm.io/gorm"
 )
@@ -36,6 +39,10 @@ func BuildContainer() (*dig.Container, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	_ = container.Provide(func() *mux.Router {
+		return router.NewRouter(controller.NewIndexController())
+	})
 
 	return container, nil
 }
