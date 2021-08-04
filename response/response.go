@@ -56,3 +56,18 @@ func NotFound(w http.ResponseWriter, msg string) {
 	sendHeaders(w, http.StatusNotFound)
 	writeResponse(w, msg)
 }
+
+func Unauthorized(w http.ResponseWriter, msg string) {
+	sendHeaders(w, http.StatusUnauthorized)
+	writeResponse(w, msg)
+}
+
+func Forbidden(w http.ResponseWriter, msg string) {
+	sendHeaders(w, http.StatusForbidden)
+	writeResponse(w, msg)
+}
+
+func InternalError(w http.ResponseWriter, msg string) {
+	sendHeaders(w, http.StatusInternalServerError)
+	writeResponse(w, msg)
+}

@@ -2,8 +2,14 @@ package model
 
 import (
 	"frm/request"
-	"frm/security"
+	"frm/service"
 	"time"
+)
+
+const (
+	RoleUser       = "user"
+	RoleAdmin      = "admin"
+	RoleSuperAdmin = "super admin"
 )
 
 type User struct {
@@ -15,18 +21,6 @@ type User struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func (u *User) CanChangeRole(user *User) bool {
-	return u.Role == security.RoleSuperAdmin && u.ID != user.ID
-}
-
-func (u *User) CanDelete(user *User) bool {
-	return u.Role == security.RoleSuperAdmin && u.ID != user.ID
-}
-
-func (u *User) CanUpdate(user *User) bool {
-	return u.Role == security.RoleSuperAdmin || u.ID == user.ID
-}
-
 func (u *User) Rename(r *request.UpdateUserRequest) {
 	u.Username = r.Username
 }
@@ -35,8 +29,8 @@ func NewUser(c *request.CreateUserRequest) *User {
 	user := &User{
 		Username:  c.Username,
 		Email:     c.Email,
-		Password:  security.EncodePassword(c.Password),
-		Role:      security.RoleUser,
+		Password:  service.EncodePassword(c.Password),
+		Role:      RoleUser,
 		CreatedAt: time.Now(),
 	}
 

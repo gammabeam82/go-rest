@@ -5,6 +5,7 @@ import (
 	"frm/controller"
 	"frm/repository"
 	"frm/router"
+	"frm/security"
 	"frm/store"
 	"github.com/gorilla/mux"
 	"go.uber.org/dig"
@@ -32,16 +33,20 @@ func BuildContainer() (*dig.Container, error) {
 		return nil, err
 	}
 
-	err = container.Provide(func(db *gorm.DB) *repository.UserRepository {
+	_ = container.Provide(func(db *gorm.DB) *repository.UserRepository {
 		return repository.NewUserRepository(db)
 	})
 
-	if err != nil {
-		return nil, err
-	}
+	_ = container.Provide(func(c *config.Config, r *repository.UserRepository) *security.Authenticator {
+		return security.NewAuthenticator(c, r)
+	})
 
-	_ = container.Provide(func() *mux.Router {
-		return router.NewRouter(controller.NewIndexController())
+	_ = container.Provide(func(c *config.Config, a *security.Authenticator) *mux.Router {
+		return router.NewRouter(
+			c,
+			controller.NewIndexController(),
+			controller.NewSecurityController(a),
+		)
 	})
 
 	return container, nil

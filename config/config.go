@@ -21,8 +21,8 @@ func (c Config) HttpPort() int {
 	return c.httpPort
 }
 
-func (c Config) JwtTokenTTL() int {
-	return c.jwtTokenTTL
+func (c Config) JwtTokenTTL() int64 {
+	return int64(c.jwtTokenTTL)
 }
 
 func (c Config) JwtSecret() []byte {

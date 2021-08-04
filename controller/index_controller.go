@@ -2,20 +2,19 @@ package controller
 
 import (
 	"frm/response"
-	"frm/router"
 	"net/http"
 )
 
 type IndexController struct {
-	routes []*router.Route
+	routes []*Route
 }
 
-func (u *IndexController) Routes() []*router.Route {
-	return u.routes
+func (i *IndexController) Routes() []*Route {
+	return i.routes
 }
 
 func NewIndexController() *IndexController {
-	index := &router.Route{
+	index := &Route{
 		Path:     "/api/index",
 		Method:   http.MethodGet,
 		Security: false,
@@ -24,9 +23,19 @@ func NewIndexController() *IndexController {
 		},
 	}
 
+	secured := &Route{
+		Path:     "/api/secret",
+		Method:   http.MethodGet,
+		Security: true,
+		Action: func(w http.ResponseWriter, r *http.Request) {
+			response.NewResponse("how did you get here?", nil).Send(w, http.StatusOK)
+		},
+	}
+
 	return &IndexController{
-		[]*router.Route{
+		[]*Route{
 			index,
+			secured,
 		},
 	}
 }

@@ -1,6 +1,8 @@
 package router
 
 import (
+	"frm/config"
+	"frm/controller"
 	"frm/middleware"
 	"frm/response"
 	"github.com/gorilla/mux"
@@ -8,19 +10,8 @@ import (
 	"net/http"
 )
 
-type HasRoutes interface {
-	Routes() []*Route
-}
-
-type Route struct {
-	Path     string
-	Method   string
-	Security bool
-	Action   http.HandlerFunc
-}
-
-func NewRouter(controllers ...HasRoutes) *mux.Router {
-	var anonymous []*Route
+func NewRouter(config *config.Config, controllers ...controller.HasRoutes) *mux.Router {
+	var anonymous []*controller.Route
 
 	router := mux.NewRouter()
 
@@ -29,8 +20,8 @@ func NewRouter(controllers ...HasRoutes) *mux.Router {
 		response.NotFound(w, "path does not exist")
 	})
 
-	for _, controller := range controllers {
-		for _, route := range controller.Routes() {
+	for _, c := range controllers {
+		for _, route := range c.Routes() {
 
 			if !route.Security {
 				anonymous = append(anonymous, route)
@@ -40,7 +31,9 @@ func NewRouter(controllers ...HasRoutes) *mux.Router {
 		}
 	}
 
-	router.Use(middleware.Logger)
+	auth := middleware.NewAuthMiddleware(config.JwtSecret(), anonymous)
+
+	router.Use(middleware.Logger, auth.Run)
 
 	return router
 }
