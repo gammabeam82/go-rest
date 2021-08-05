@@ -11,7 +11,7 @@ import (
 )
 
 func NewRouter(config *config.Config, controllers ...controller.HasRoutes) *mux.Router {
-	var anonymous []*controller.Route
+	var excluded []*controller.Route
 
 	router := mux.NewRouter()
 
@@ -24,16 +24,16 @@ func NewRouter(config *config.Config, controllers ...controller.HasRoutes) *mux.
 		for _, route := range c.Routes() {
 
 			if !route.Security {
-				anonymous = append(anonymous, route)
+				excluded = append(excluded, route)
 			}
 
 			router.HandleFunc(route.Path, route.Action).Methods(route.Method)
 		}
 	}
 
-	auth := middleware.NewAuthMiddleware(config.JwtSecret(), anonymous)
+	accessManager := middleware.NewAccessManager(config.JwtSecret(), excluded)
 
-	router.Use(middleware.Logger, auth.Run)
+	router.Use(middleware.Logger, accessManager.Run)
 
 	return router
 }

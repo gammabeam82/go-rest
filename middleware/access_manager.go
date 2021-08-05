@@ -12,19 +12,19 @@ import (
 	"strings"
 )
 
-type AuthMiddleware struct {
+type AccessManager struct {
 	excluded []*controller.Route
 	secret   []byte
 }
 
-func NewAuthMiddleware(secret []byte, excluded []*controller.Route) *AuthMiddleware {
-	return &AuthMiddleware{
+func NewAccessManager(secret []byte, excluded []*controller.Route) *AccessManager {
+	return &AccessManager{
 		excluded,
 		secret,
 	}
 }
 
-func (a *AuthMiddleware) Run(next http.Handler) http.Handler {
+func (a *AccessManager) Run(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		for _, route := range a.excluded {
 			if route.Path == r.URL.Path && route.Method == r.Method {
