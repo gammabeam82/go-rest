@@ -15,7 +15,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = container.Provide(func(conn *gorm.DB) {
+	err = container.Invoke(func(conn *gorm.DB) {
 		defer func() {
 			if err = store.CloseConnection(conn); err != nil {
 				log.Fatal(err)

@@ -14,11 +14,11 @@ const (
 
 type User struct {
 	ID        uint      `gorm:"primary_key" json:"id"`
-	Username  string    `json:"username"`
+	Username  string    `gorm:"not null" json:"username"`
 	Email     string    `gorm:"not null;unique" json:"email"`
 	Password  string    `gorm:"not null;column:upassword" json:"-"`
-	Role      string    `json:"role"`
-	CreatedAt time.Time `json:"created_at"`
+	Role      string    `gorm:"not null" json:"role"`
+	CreatedAt time.Time `gorm:"not null" json:"created_at"`
 }
 
 func (u *User) Rename(r *request.UpdateUserRequest) {
