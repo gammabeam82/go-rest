@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"frm/config"
 	"frm/repository"
-	"frm/service"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
 
@@ -33,7 +33,7 @@ func (a Authenticator) Login(r *http.Request) (*Token, error) {
 		return nil, err
 	}
 
-	if err := service.IsPasswordValid(user.Password, cr.Password); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(cr.Password)); err != nil {
 		return nil, err
 	}
 

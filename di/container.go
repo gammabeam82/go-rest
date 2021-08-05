@@ -3,6 +3,7 @@ package di
 import (
 	"frm/config"
 	"frm/controller"
+	"frm/handler"
 	"frm/repository"
 	"frm/router"
 	"frm/security"
@@ -41,11 +42,16 @@ func BuildContainer() (*dig.Container, error) {
 		return security.NewAuthenticator(c, r)
 	})
 
-	_ = container.Provide(func(c *config.Config, a *security.Authenticator) *mux.Router {
+	_ = container.Provide(func(r *repository.UserRepository) *handler.UserHandler {
+		return handler.NewUserHandler(r)
+	})
+
+	_ = container.Provide(func(c *config.Config, a *security.Authenticator, h *handler.UserHandler) *mux.Router {
 		return router.NewRouter(
 			c,
 			controller.NewIndexController(),
 			controller.NewSecurityController(a),
+			controller.NewUserController(h),
 		)
 	})
 
