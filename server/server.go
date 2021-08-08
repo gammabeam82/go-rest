@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
 )
@@ -10,10 +11,9 @@ import (
 func Run(router *mux.Router, port int) {
 	log.Printf("Listening at localhost:%v\n", port)
 
-	if err := http.ListenAndServe(
-		fmt.Sprintf("localhost:%v", port),
-		router,
-	); err != nil {
-		log.Fatal(err)
-	}
+	handler := cors.Default().Handler(router)
+
+	log.Fatal(
+		http.ListenAndServe(fmt.Sprintf("localhost:%v", port), handler),
+	)
 }
