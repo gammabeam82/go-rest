@@ -39,7 +39,7 @@ func (a *AccessManager) Run(next http.Handler) http.Handler {
 			return
 		}
 
-		match, _ := regexp.MatchString(`^Bearer ([\w\-]+\.){2}([\w\-]+){1}$`, token)
+		match, _ := regexp.MatchString(`^Bearer ([\w\-]+\.){2}([\w\-]+)$`, token)
 		if !match {
 			response.Unauthorized(w, "invalid token format")
 			return
