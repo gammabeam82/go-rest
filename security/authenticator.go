@@ -2,6 +2,7 @@ package security
 
 import (
 	"encoding/json"
+	"errors"
 	"frm/config"
 	"frm/repository"
 	"golang.org/x/crypto/bcrypt"
@@ -30,11 +31,11 @@ func (a Authenticator) Login(r *http.Request) (*Token, error) {
 	user, err := a.repo.FindByEmail(cr.Email)
 
 	if err != nil {
-		return nil, err
+		return nil, errors.New("invalid credentials")
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(cr.Password)); err != nil {
-		return nil, err
+		return nil, errors.New("invalid credentials")
 	}
 
 	return NewToken(user.ID, user.Role, a.config)
