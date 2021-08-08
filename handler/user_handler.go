@@ -5,6 +5,7 @@ import (
 	"frm/model"
 	"frm/repository"
 	"frm/request"
+	"github.com/go-playground/validator/v10"
 	"net/http"
 )
 
@@ -15,11 +16,15 @@ func (a AccessDenied) Error() string {
 }
 
 type UserHandler struct {
-	repo *repository.UserRepository
+	repo      *repository.UserRepository
+	validator *validator.Validate
 }
 
-func NewUserHandler(r *repository.UserRepository) *UserHandler {
-	return &UserHandler{repo: r}
+func NewUserHandler(r *repository.UserRepository, v *validator.Validate) *UserHandler {
+	return &UserHandler{
+		repo:      r,
+		validator: v,
+	}
 }
 
 func (u *UserHandler) List() (*model.Users, error) {
@@ -37,7 +42,9 @@ func (u *UserHandler) CreateUser(r *http.Request) (*model.User, error) {
 		return nil, err
 	}
 
-	if ok, err := req.Validate(); !ok {
+	err := u.validator.Struct(req)
+
+	if err != nil {
 		return nil, err
 	}
 
@@ -85,7 +92,9 @@ func (u *UserHandler) UpdateUser(r *http.Request, currentUser *model.User, id in
 		return err
 	}
 
-	if ok, err := req.Validate(); !ok {
+	err = u.validator.Struct(req)
+
+	if err != nil {
 		return err
 	}
 

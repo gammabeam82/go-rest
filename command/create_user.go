@@ -7,6 +7,7 @@ import (
 	"frm/repository"
 	"frm/request"
 	"frm/store"
+	"github.com/go-playground/validator/v10"
 	"log"
 )
 
@@ -25,20 +26,22 @@ func main() {
 
 	flag.Parse()
 
-	req := &request.CreateUserRequest{
-		Username:         username,
-		Email:            email,
-		Password:         password,
-		RepeatedPassword: password,
-	}
+	err = container.Invoke(func(repo *repository.UserRepository, v *validator.Validate) {
+		req := &request.CreateUserRequest{
+			Username:         username,
+			Email:            email,
+			Password:         password,
+			RepeatedPassword: password,
+		}
 
-	if ok, err := req.Validate(); !ok {
-		log.Fatal(err)
-	}
+		err = v.Struct(req)
 
-	user := model.NewUser(req)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	err = container.Invoke(func(repo *repository.UserRepository) {
+		user := model.NewUser(req)
+
 		defer func() {
 			if err = store.CloseConnection(repo.GetConnection()); err != nil {
 				log.Fatal(err)
@@ -48,11 +51,11 @@ func main() {
 		if err = repo.Create(user); err != nil {
 			log.Fatal(err)
 		}
+
+		log.Printf("User %s was successfully created\n", req.Username)
 	})
 
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	log.Printf("User %s was successfully created\n", req.Username)
 }

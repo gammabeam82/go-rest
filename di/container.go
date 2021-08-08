@@ -8,6 +8,8 @@ import (
 	"frm/router"
 	"frm/security"
 	"frm/store"
+	"frm/validation"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"go.uber.org/dig"
 	"gorm.io/gorm"
@@ -34,6 +36,10 @@ func BuildContainer() (*dig.Container, error) {
 		return nil, err
 	}
 
+	_ = container.Provide(func() *validator.Validate {
+		return validation.NewValidator()
+	})
+
 	_ = container.Provide(func(db *gorm.DB) *repository.UserRepository {
 		return repository.NewUserRepository(db)
 	})
@@ -42,8 +48,8 @@ func BuildContainer() (*dig.Container, error) {
 		return security.NewAuthenticator(c, r)
 	})
 
-	_ = container.Provide(func(r *repository.UserRepository) *handler.UserHandler {
-		return handler.NewUserHandler(r)
+	_ = container.Provide(func(r *repository.UserRepository, v *validator.Validate) *handler.UserHandler {
+		return handler.NewUserHandler(r, v)
 	})
 
 	_ = container.Provide(func(c *config.Config, a *security.Authenticator, h *handler.UserHandler) *mux.Router {
