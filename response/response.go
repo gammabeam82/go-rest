@@ -21,6 +21,7 @@ func (r *Response) Send(w http.ResponseWriter, status int) {
 	w.WriteHeader(status)
 
 	encoder := json.NewEncoder(w)
+
 	if err := encoder.Encode(r); err != nil {
 		log.Println(err)
 	}
@@ -36,6 +37,7 @@ func NewResponse(data interface{}, err error) *Response {
 			fmt.Sprintf("%s", err),
 		}
 	}
+
 	return resp
 }
 
@@ -47,6 +49,7 @@ func sendHeaders(w http.ResponseWriter, status int) {
 func writeResponse(w http.ResponseWriter, msg string) {
 	encoder := json.NewEncoder(w)
 	err := encoder.Encode(&JsonError{msg})
+
 	if err != nil {
 		log.Println(err)
 	}

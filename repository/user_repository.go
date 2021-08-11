@@ -24,7 +24,7 @@ func (r *UserRepository) Create(user *model.User) error {
 func (r *UserRepository) FindAll() (*model.Users, error) {
 	var users model.Users
 
-	if err := r.db.Find(&users).Error; err != nil {
+	if err := r.db.Order("id asc").Find(&users).Error; err != nil {
 		return nil, err
 	}
 
