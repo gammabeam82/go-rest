@@ -1,7 +1,6 @@
 package validation
 
 import (
-	"frm/request"
 	"github.com/go-playground/validator/v10"
 	"regexp"
 )
@@ -19,16 +18,6 @@ func NewValidator() *validator.Validate {
 		match, _ := regexp.MatchString(`^[\w_.\-#$]{6,24}$`, fl.Field().String())
 
 		return match
-	})
-
-	_ = v.RegisterValidation("rpassword", func(fl validator.FieldLevel) bool {
-		req, ok := fl.Top().Interface().(*request.CreateUserRequest)
-
-		if !ok {
-			return false
-		}
-
-		return req.Password == fl.Field().String()
 	})
 
 	return v
