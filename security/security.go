@@ -1,7 +1,9 @@
 package security
 
 import (
+	"fmt"
 	"frm/config"
+	"frm/model"
 	"github.com/golang-jwt/jwt"
 	"time"
 )
@@ -22,16 +24,17 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func NewToken(userId uint, role string, config *config.Config) (*Token, error) {
+func NewToken(user *model.User, config *config.Config) (*Token, error) {
 	claims := Claims{
-		UserId: userId,
-		Role:   role,
+		UserId: user.ID,
+		Role:   user.Role,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Unix() + config.JwtTokenTTL(),
 		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
 	ts, err := token.SignedString(config.JwtSecret())
 
 	if err != nil {
@@ -39,7 +42,7 @@ func NewToken(userId uint, role string, config *config.Config) (*Token, error) {
 	}
 
 	return &Token{
-		UserId: userId,
-		Token:  "Bearer " + ts,
+		UserId: user.ID,
+		Token:  fmt.Sprintf("Bearer %s", ts),
 	}, nil
 }

@@ -38,5 +38,5 @@ func (a Authenticator) Login(r *http.Request) (*Token, error) {
 		return nil, errors.New("invalid credentials")
 	}
 
-	return NewToken(user.ID, user.Role, a.config)
+	return NewToken(user, a.config)
 }

@@ -34,21 +34,22 @@ func (a *AccessManager) Run(next http.Handler) http.Handler {
 		}
 
 		token := r.Header.Get("Authorization")
+
 		if len(token) == 0 {
 			response.Unauthorized(w, "Authentication needed")
 			return
 		}
 
 		match, _ := regexp.MatchString(`^Bearer ([\w\-]+\.){2}([\w\-]+)$`, token)
+
 		if !match {
 			response.Unauthorized(w, "invalid token format")
 			return
 		}
 
-		t := strings.Split(token, " ")[1]
 		payload := &security.Claims{}
 
-		tk, err := jwt.ParseWithClaims(t, payload, func(jwtToken *jwt.Token) (interface{}, error) {
+		tk, err := jwt.ParseWithClaims(strings.Split(token, " ")[1], payload, func(jwtToken *jwt.Token) (interface{}, error) {
 			return a.secret, nil
 		})
 
