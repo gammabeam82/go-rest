@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"frm/bus"
 	"frm/model"
 	"frm/repository"
 	"frm/request"
@@ -18,12 +19,14 @@ func (a AccessDenied) Error() string {
 type UserHandler struct {
 	repo      *repository.UserRepository
 	validator *validator.Validate
+	bus       *bus.EventBus
 }
 
-func NewUserHandler(r *repository.UserRepository, v *validator.Validate) *UserHandler {
+func NewUserHandler(r *repository.UserRepository, v *validator.Validate, b *bus.EventBus) *UserHandler {
 	return &UserHandler{
 		repo:      r,
 		validator: v,
+		bus:       b,
 	}
 }
 
@@ -53,6 +56,8 @@ func (u *UserHandler) CreateUser(r *http.Request) (*model.User, error) {
 	if err := u.repo.Create(user); err != nil {
 		return nil, err
 	}
+
+	u.bus.Dispatch(bus.NewUserCreated(user))
 
 	return user, nil
 }

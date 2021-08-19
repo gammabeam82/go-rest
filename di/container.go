@@ -1,6 +1,7 @@
 package di
 
 import (
+	"frm/bus"
 	"frm/config"
 	"frm/controller"
 	"frm/handler"
@@ -48,8 +49,16 @@ func BuildContainer() (*dig.Container, error) {
 		return security.NewAuthenticator(c, r)
 	})
 
-	_ = container.Provide(func(r *repository.UserRepository, v *validator.Validate) *handler.UserHandler {
-		return handler.NewUserHandler(r, v)
+	_ = container.Provide(func() *bus.EventBus {
+		b := bus.NewEventBus()
+
+		b.Register(bus.UserSubscriber{})
+
+		return b
+	})
+
+	_ = container.Provide(func(r *repository.UserRepository, v *validator.Validate, b *bus.EventBus) *handler.UserHandler {
+		return handler.NewUserHandler(r, v, b)
 	})
 
 	_ = container.Provide(func(c *config.Config, a *security.Authenticator, h *handler.UserHandler) *mux.Router {
