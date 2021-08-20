@@ -38,7 +38,7 @@ func NewUserController(handler *handler.UserHandler) *UserController {
 			user, err := handler.CreateUser(r)
 
 			if err != nil {
-				response.InternalError(w, "")
+				response.InternalError(w, "") //TODO return friendly error message
 				return
 			}
 
@@ -54,7 +54,7 @@ func NewUserController(handler *handler.UserHandler) *UserController {
 			users, err := handler.List()
 
 			if err != nil {
-				response.InternalError(w, "")
+				response.InternalError(w, "") //TODO return friendly error message
 				return
 			}
 
@@ -72,7 +72,7 @@ func NewUserController(handler *handler.UserHandler) *UserController {
 			user, err := handler.GetUser(id)
 
 			if err != nil {
-				response.InternalError(w, "")
+				response.InternalError(w, "") //TODO return friendly error message
 				return
 			}
 
@@ -90,7 +90,7 @@ func NewUserController(handler *handler.UserHandler) *UserController {
 			currentUser, err := getCurrentUser(r)
 
 			if err != nil {
-				response.InternalError(w, "")
+				response.InternalError(w, "") //TODO return friendly error message
 				return
 			}
 
@@ -115,7 +115,7 @@ func NewUserController(handler *handler.UserHandler) *UserController {
 			currentUser, err := getCurrentUser(r)
 
 			if err != nil {
-				response.InternalError(w, "")
+				response.InternalError(w, "") //TODO return friendly error message
 				return
 			}
 

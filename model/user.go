@@ -6,10 +6,12 @@ import (
 	"time"
 )
 
+type Role string
+
 const (
-	RoleUser       = "user"
-	RoleAdmin      = "admin"
-	RoleSuperAdmin = "super admin"
+	RoleUser       Role = "user"
+	RoleAdmin      Role = "admin"
+	RoleSuperAdmin Role = "super admin"
 )
 
 type User struct {
@@ -28,15 +30,15 @@ func (u *User) Rename(r *request.UpdateUserRequest) {
 }
 
 func (u *User) CanDelete(user *User) bool {
-	return u.Role == RoleSuperAdmin && user.Role != RoleSuperAdmin
+	return Role(u.Role) == RoleSuperAdmin && Role(user.Role) != RoleSuperAdmin
 }
 
 func (u *User) CanUpdate(user *User) bool {
-	return u.Role == RoleSuperAdmin || u.ID == user.ID
+	return Role(u.Role) == RoleSuperAdmin || u.ID == user.ID
 }
 
 func (u *User) CanChangeRole(user *User) bool {
-	return u.Role == RoleSuperAdmin && user.Role != RoleSuperAdmin
+	return Role(u.Role) == RoleSuperAdmin && Role(user.Role) != RoleSuperAdmin
 }
 
 func NewUser(c *request.CreateUserRequest) *User {
@@ -46,7 +48,7 @@ func NewUser(c *request.CreateUserRequest) *User {
 		Username:  c.Username,
 		Email:     c.Email,
 		Password:  string(encodedPassword),
-		Role:      RoleUser,
+		Role:      string(RoleUser),
 		CreatedAt: time.Now(),
 	}
 
